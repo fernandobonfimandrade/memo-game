@@ -128,7 +128,7 @@ html,body{
 }
 #timerBar{
     width: 100%;
-    background-color:#397e00;
+    background-color:#a3069683;
     z-index: 1;
     position: absolute;
     height: 100%;
@@ -143,9 +143,9 @@ html,body{
 .gameButtons{
     text-align: center;
     font-size: 15px;
-    background-color: blue;
+    background-color: rgb(87, 40, 218);
     border: solid 3px #a809ff;
-    border-radius: 3px;
+    border-radius: 5px;
     padding: 3px;
     margin-bottom: 3px;
 }
@@ -187,8 +187,8 @@ html,body{
     width: 25px;
     height: 25px;
     padding: 10px;
-    background: #ffcf23;
-    border: solid 7px #fff;
+    background: #ff7b7b;
+    border: solid 7px #a809ff;
     border-radius: 50px;
     text-align: center;
     font-size: 26px;

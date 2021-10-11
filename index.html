@@ -37,7 +37,7 @@
                         <div class="placar" id="movimentos" ></div>
                     </div>
                 </div>
-                <div class="gameButtons modalBtn" onclick="newGame()">Novo Jogo</div>
+                <div class="gameButtons modalBtn" onclick="newGame()">Iniciar</div>
                 <div class="dificuldades" >
                     <label>
                         <input type="radio" value="0" name="dificuldade">Fácil
@@ -302,6 +302,7 @@ class Memoria {
     newGame(){
         this.start = true;
         this.clicavel = true;
+        this.movimentos = 0;
         this.cartasViradas = [];
     };
     gameWinner(){

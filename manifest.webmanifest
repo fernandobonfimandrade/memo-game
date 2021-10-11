@@ -1,12 +1,12 @@
 {
-    "theme_color": "#0e5eb3",
-    "background_color": "#0e5eb3",
+    "theme_color": "#a808ff",
+    "background_color": "#ededed",
     "display": "standalone",
     "orientation": "portrait",
     "scope": "/memo-game/",
     "start_url": "/memo-game/index.html?launcher=true",
-    "name": "Memo",
-    "short_name": "Memo",
+    "name": "MemoGame",
+    "short_name": "MemoGame",
     "description": "Memo - GAME",
     "icons": [
         {

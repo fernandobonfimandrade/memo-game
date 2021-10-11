@@ -13,8 +13,7 @@
     <div class="container">
         <div id="info">
             <div class="buttons">
-                <div class="gameButtons" onclick="newGame()">Novo Jogo</div>
-                <div class="gameButtons" onclick="escolhaDificuldade()">Dificuldade</div>
+                <div class="gameButtons" onclick="menu()">Menu</div>
             </div>
             <div class="timer">
                 <div id="timerBar"></div>
@@ -28,6 +27,17 @@
         <div class="modal-body" >
             <div class="modal-close" onclick="closeModal()" >X</div>
             <h6 id="modal-text" >
+                <div class="info ">
+                    <div id="loser" class="infoPlacar hide" >
+                        <div class="icons">❇️<span class="bigIcon" >👻️</span>❇️</div>
+                        <div class="placar">Fim de jogo</div>
+                    </div>
+                    <div id="winner" class="infoPlacar hide" >
+                        <div class="icons">⭐️<span class="bigIcon" >🌟️</span>⭐️</div>
+                        <div class="placar" id="movimentos" ></div>
+                    </div>
+                </div>
+                <div class="gameButtons modalBtn" onclick="newGame()">Novo Jogo</div>
                 <div class="dificuldades" >
                     <label>
                         <input type="radio" value="0" name="dificuldade">Fácil
@@ -72,16 +82,20 @@ var _dificuldade = [180,120,60,0];
 
 function openModal(text){
     document.getElementById('modal').style.display = 'flex';
-    //document.getElementById('modal-text').innerHTML = text;
 }
 
 function closeModal(){
     document.getElementById('modal').style.display = 'none';
-    //document.getElementById('modal-text').innerHTML = '';
+    addClass(document.getElementById('loser'),'hide');
+    addClass(document.getElementById('winner'),'hide');
+    clock.continue();
 }
 
-function escolhaDificuldade(){
+function menu(init = false){
     openModal();
+    if(!init){
+        clock.pause();
+    }
 }
 
 
@@ -108,12 +122,13 @@ function hasClass(ele,cls) {
 }
 
 function addClass(ele,cls) {
-  if (!hasClass(ele,cls)) ele.className = ele.className.trim()+" "+cls;
+  if (!hasClass(ele,cls)){
+      ele.className = ele.className.trim()+" "+cls;
+  } 
 }
 
 function removeClass(ele,cls) {
   if (hasClass(ele,cls)) {
-      console.log(ele);
     var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
     ele.className=ele.className.replace(reg,'');
   }
@@ -121,6 +136,7 @@ function removeClass(ele,cls) {
 
 class Timer{
     timer = 0;
+    pausado = false;
     constructor(game,element,timeInit){
         this.timeInit = timeInit;
         this.element = element;
@@ -140,7 +156,7 @@ class Timer{
                         this.clear();
                         setTimeout(() => {
                             game.start = false;
-                            alert('Game Over');
+                            game.gameOver();
                         }, 500);
                     }
                     break;
@@ -151,7 +167,36 @@ class Timer{
     clear(){
         clearInterval(this.interval);
         this.element.innerText = '-';
-    }
+    };
+    pause(){
+        clearInterval(this.interval);
+        this.pausado = true;
+    };
+    continue(){
+        if(this.pausado){
+            this.interval = setInterval(() => {
+            switch (this.timeInit) {
+                case 0:
+                    this.element.innerText = this.timer++;
+                    break;
+            
+                default:
+                    const percent = parseInt((this.timer*100)/this.timeInit);
+                    this.element.innerText = this.timer--;
+                    document.getElementById('timerBar').style.width = percent+'%';
+                    if(this.timer == 0){
+                        this.clear();
+                        setTimeout(() => {
+                            game.start = false;
+                            game.gameOver();
+                        }, 500);
+                    }
+                    break;
+            }
+           
+        }, 1000);
+        }
+    };
 }
 
 
@@ -159,6 +204,7 @@ class Memoria {
     constructor() {
         this.start = false;
         this.clicavel = false;
+        this.movimentos = 0;
         this.cartasViradas = [];
     };
     endgame(){
@@ -166,7 +212,7 @@ class Memoria {
             this.start = false;
             this.clicavel = false;
             setTimeout(() => {
-                alert('Fim de jogo');
+                this.gameWinner();
             }, 500);
             clock.clear();
         }
@@ -175,6 +221,7 @@ class Memoria {
         if(this.cartasViradas.length < 2 && this.start && this.clicavel && !hasClass(gridItem,'virar')){
             this.cartasViradas.push({card: gridItem, valor:valor});
             addClass(gridItem,'virar');
+            this.movimentos++;
             if(this.cartasViradas.length == 2){
                 this.clicavel = false;
                 this.endgame();
@@ -196,9 +243,9 @@ class Memoria {
     desvirarCarta(gridItem){
         removeClass(gridItem,'virar');
     };
-    criarCard(icone,valor){
+    criarCard(icone,valor,initViradas){
         const gridItem = document.createElement('div');
-        gridItem.className = 'grid-item';
+        gridItem.className = 'grid-item '+initViradas;
         gridItem.onclick = () => { this.virarCarta(gridItem,valor) };
         
         const card = document.createElement('div');
@@ -218,15 +265,14 @@ class Memoria {
         document.getElementById('board').appendChild(gridItem);
         return;
     };
-    init(){
-        const qtd = document.getElementsByClassName('virar').length;
+    init(initViradas = ''){
+        const qtd = document.getElementsByClassName('grid-item').length;
         const cartas = document.getElementsByClassName('grid-item');
         let timeout = 0;
         if(qtd > 0){
             for (let index = 0; index < qtd; index++) {
                 setTimeout(() => {
-                console.log(index);
-                this.desvirarCarta(cartas[index]);
+                    this.desvirarCarta(cartas[index]);
                 }, timeout);
                 timeout+=50;
             }
@@ -239,7 +285,7 @@ class Memoria {
             let baralhoJogo = embaralhar.slice(0,qtdCardas > 12 ? 12 : qtdCardas );
             baralhoJogo = shuffle(baralhoJogo.concat(baralhoJogo));
             for (let index = 0; index < baralhoJogo.length; index++) {
-                this.criarCard(baralhoJogo[index].icone,baralhoJogo[index].valor);
+                this.criarCard(baralhoJogo[index].icone,baralhoJogo[index].valor,initViradas);
             }
         }, timeout+500);
     };
@@ -257,13 +303,22 @@ class Memoria {
         this.start = true;
         this.clicavel = true;
         this.cartasViradas = [];
+    };
+    gameWinner(){
+        removeClass(document.getElementById('winner'),'hide');
+        document.getElementById('movimentos').innerText = this.movimentos+' movimentos';
+        openModal();
+    };
+    gameOver(){
+        removeClass(document.getElementById('loser'),'hide');
+        openModal();
     }
 }
 
 
 function init(){
     game = new Memoria();
-    game.init();
+    game.init('virar');
     return game;
 }
 
@@ -276,11 +331,13 @@ function newGame(){
     }else{
         clock = new Timer(game,document.getElementById('timerText'), game.dificuldade());
     }
+    closeModal();
     game.newGame();
 }
 
 document.addEventListener("DOMContentLoaded", function(event) { 
     const game = init();
+    menu(true);
 })
 
 

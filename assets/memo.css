@@ -57,6 +57,7 @@ html,body{
     margin: 0 auto;
     display: grid;
     grid-template-columns: auto auto auto auto;
+    position: relative;
 }
 
 .grid-item{
@@ -64,6 +65,18 @@ html,body{
     text-align: center;
     perspective: 1000px;
     border-radius: 20px;
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    -ms-transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;
+}
+
+.grid-item.stack{
+    position: absolute;
+    width: 25%;
+    left:0;
+    right: 0;
 }
 
 .grid-item.virar .card {

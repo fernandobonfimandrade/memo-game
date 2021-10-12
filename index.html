@@ -269,12 +269,21 @@ class Memoria {
         const qtd = document.getElementsByClassName('grid-item').length;
         const cartas = document.getElementsByClassName('grid-item');
         let timeout = 0;
-        if(qtd > 0){
+        if(document.getElementsByClassName('stack').length > 0){
             for (let index = 0; index < qtd; index++) {
                 setTimeout(() => {
-                    this.desvirarCarta(cartas[index]);
+                    removeClass(cartas[index],'stack');
                 }, timeout);
                 timeout+=50;
+            }
+        }else{
+            if(qtd > 0){
+                for (let index = 0; index < qtd; index++) {
+                    setTimeout(() => {
+                        this.desvirarCarta(cartas[index]);
+                    }, timeout);
+                    timeout+=50;
+                }
             }
         }
         setTimeout(() => {
@@ -319,7 +328,7 @@ class Memoria {
 
 function init(){
     game = new Memoria();
-    game.init('virar');
+    game.init('stack');
     return game;
 }
 
